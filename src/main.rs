@@ -1,5 +1,5 @@
 use std::{
-    process::{exit, Child},
+    process::exit,
     sync::{Arc, Mutex},
     thread::{self, sleep},
     time::Duration,
