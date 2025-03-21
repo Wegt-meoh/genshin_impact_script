@@ -1,32 +1,53 @@
-name: Auto Build & Release Rust Binary
+name: Auto Build & Release Rust Binary (latest)
 
 on:
   push:
-    tags:
-      - "v*"  # Triggers only when a tag (e.g., v1.0.0) is pushed
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest]  # Build for multiple platforms
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Determine archive name
+        shell: bash
+        run: |
+          echo "ARCHIVE="safe_rm-${{ matrix.target }}.exe" >> $GITHUB_ENV
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable  # Uses the latest stable Rust version
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+     
+      - name: Install Rust target
+        run: rustup target add ${{ matrix.target }}
 
       - name: Build Release Binary
-        run: cargo build --release         
+        run: |
+          cargo build --release --target ${{ matrix.target }}
+          mv "target/${{ matrix.target }}/release/safe_rm.exe"
+          7z a "$ARCHIVE.zip" safe_rm.exe
+          echo "ASSET=$ARCHIVE.zip" >> $GITHUB_ENV
+          echo "ASSET_SUM=$ARCHIVE.zip.sha256" >> $GITHUB_ENV
+          certutil -hashfile "$ARCHIVE.zip" SHA256 > "$ARCHIVE.zip.sha256"
 
       - name: Upload Binary as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.os }}
-          path: target/release/genshin_script.exe
+          name: build-${{ matrix.target }}
+          path: |
+            ${{ ASSET }}
+            ${{ ASSET_SUM }}
 
   release:
     needs: build
@@ -35,16 +56,11 @@ jobs:
       - name: Download All Binaries
         uses: actions/download-artifact@v4
         with:
-          path: build/
-
-      - name: Zip Binaries
-        run: |
-          cd build/
-          zip -r genshin_script-${{ github.ref_name }}.zip */
+          path: build*
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/genshin_script-${{ github.ref_name }}.zip
+          files: build*
         env:
           GITHUB_TOKEN: ${{ secrets.GENSHIN_IMPACT_RELEASE }}
