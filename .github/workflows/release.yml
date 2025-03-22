@@ -24,7 +24,7 @@ jobs:
       - name: Determine archive name
         shell: bash
         run: |
-          echo "ARCHIVE=genshin_script.exe" >> $GITHUB_ENV
+          echo "ARCHIVE=genshin_script" >> $GITHUB_ENV
 
       - name: Set up Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -35,16 +35,18 @@ jobs:
       - name: Build Release Binary
         run: |
           cargo build --release --target ${{ matrix.target }}
-          mv "target/${{ matrix.target }}/release/$ARCHIVE" ./
-          7z a "$ARCHIVE.zip" "$ARCHIVE"
-          echo "ASSET=$ARCHIVE.zip" >> $GITHUB_ENV
-          echo "ASSET_SUM=$ARCHIVE.zip.sha256" >> $GITHUB_ENV
-          certutil -hashfile "$ARCHIVE.zip" SHA256 > "$ARCHIVE.zip.sha256"
+          pd = "$ARCHIVE-latest-${{ matrix.target }}"
+          mkdir -p "$pd"
+          mv "target/${{ matrix.target }}/release/$ARCHIVE.exe" "$pd"
+          7z a "$pd.zip" "$pd"
+          echo "ASSET=$pd.zip" >> $GITHUB_ENV
+          echo "ASSET_SUM=$pd.zip.sha256" >> $GITHUB_ENV
+          certutil -hashfile "$pd.zip" SHA256 > "$pd.zip.sha256"
 
       - name: Upload Binary as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.target }}
+          name: build
           path: |
             ${{ env.ASSET }}
             ${{ env.ASSET_SUM }}
@@ -56,11 +58,11 @@ jobs:
       - name: Download All Binaries
         uses: actions/download-artifact@v4
         with:
-          path: build*
+          path: build
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: build*
+          files: build/*
         env:
           GITHUB_TOKEN: ${{ secrets.GENSHIN_IMPACT_RELEASE }}
