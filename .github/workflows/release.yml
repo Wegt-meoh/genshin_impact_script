@@ -33,17 +33,28 @@ jobs:
         shell: bash
         run: rustup target add ${{ matrix.target }}
 
-      - name: Build Release Binary
+      - name: Build release binary
+        shell: bash
         run: |
-          $PD = "$ARCHIVE-latest-${{ matrix.target }}"
-          echo "Archive path is: $PD"  # Debugging output
           cargo build --release --target ${{ matrix.target }}
-          mkdir -p "$PD"
-          mv "target/${{ matrix.target }}/release/$ARCHIVE.exe" "$PD"
-          7z a "$PD.zip" "$PD"
-          certutil -hashfile "$PD.zip" SHA256 > "$PD.zip.sha256"
-          echo "ASSET=$PD.zip" >> $GITHUB_ENV
-          echo "ASSET_SUM=$PD.zip.sha256" >> $GITHUB_ENV
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            bin="target/${{ matrix.target }}/release/genshin_script.exe"
+          else
+            bin="target/${{ matrix.target }}/release/genshin_script"
+          fi
+          echo "BIN=$bin" >> $GITHUB_ENV
+
+      - name: Zip the binary
+        shell: bash
+        run: |
+          pd="genshin_script-latest-${{ matrix.target }}"
+          echo "the pd path = $pd"
+          mkdir -p "$pd"
+          mv "$BIN" "$pd"
+          7z a "$pd.zip" "$pd"
+          certutil -hashfile "$pd.zip" SHA256 > "$pd.zip.sha256"
+          echo "ASSET=$pd.zip" >> $GITHUB_ENV
+          echo "ASSET_SUM=$pd.zip.sha256" >> $GITHUB_ENV
 
       - name: Upload Binary as Artifact
         uses: actions/upload-artifact@v4
