@@ -35,7 +35,7 @@ jobs:
       - name: Build Release Binary
         run: |
           cargo build --release --target ${{ matrix.target }}
-          mv "target/${{ matrix.target }}/release/${{ ARCHIVE }}" ./
+          mv "target/${{ matrix.target }}/release/$ARCHIVE" ./
           7z a "$ARCHIVE.zip" "$ARCHIVE"
           echo "ASSET=$ARCHIVE.zip" >> $GITHUB_ENV
           echo "ASSET_SUM=$ARCHIVE.zip.sha256" >> $GITHUB_ENV
