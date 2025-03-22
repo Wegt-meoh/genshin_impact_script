@@ -24,7 +24,7 @@ jobs:
       - name: Determine archive name
         shell: bash
         run: |
-          echo "ARCHIVE=safe_rm-${{ matrix.target }}.exe" >> $GITHUB_ENV
+          echo "ARCHIVE=genshin_script.exe" >> $GITHUB_ENV
 
       - name: Set up Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -35,8 +35,8 @@ jobs:
       - name: Build Release Binary
         run: |
           cargo build --release --target ${{ matrix.target }}
-          mv "target/${{ matrix.target }}/release/safe_rm.exe" safe_rm.exe
-          7z a "$ARCHIVE.zip" safe_rm.exe
+          mv "target/${{ matrix.target }}/release/${{ ARCHIVE }}" ./
+          7z a "$ARCHIVE.zip" "$ARCHIVE"
           echo "ASSET=$ARCHIVE.zip" >> $GITHUB_ENV
           echo "ASSET_SUM=$ARCHIVE.zip.sha256" >> $GITHUB_ENV
           certutil -hashfile "$ARCHIVE.zip" SHA256 > "$ARCHIVE.zip.sha256"
