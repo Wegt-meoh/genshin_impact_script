@@ -72,5 +72,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: build/*
+          tag: latest
         env:
           GITHUB_TOKEN: ${{ secrets.GENSHIN_IMPACT_RELEASE }}
