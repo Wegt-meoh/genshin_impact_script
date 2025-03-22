@@ -24,7 +24,7 @@ jobs:
       - name: Determine archive name
         shell: bash
         run: |
-          echo "ARCHIVE="safe_rm-${{ matrix.target }}.exe" >> $GITHUB_ENV
+          echo "ARCHIVE=safe_rm-${{ matrix.target }}.exe" >> $GITHUB_ENV
 
       - name: Set up Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
