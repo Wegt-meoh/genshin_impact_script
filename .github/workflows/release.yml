@@ -25,7 +25,6 @@ jobs:
         shell: bash
         run: |
           echo "ARCHIVE=genshin_script" >> $GITHUB_ENV
-          echo "PD=genshin_script-latest-${{ matrix.target }}" >> $GITHUB_ENV
 
       - name: Set up Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -36,6 +35,8 @@ jobs:
 
       - name: Build Release Binary
         run: |
+          $PD = "$ARCHIVE-latest-${{ matrix.target }}"
+          echo "Archive path is: $PD"  # Debugging output
           cargo build --release --target ${{ matrix.target }}
           mkdir -p "$PD"
           mv "target/${{ matrix.target }}/release/$ARCHIVE.exe" "$PD"
