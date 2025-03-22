@@ -43,20 +43,12 @@ jobs:
         shell: bash
         run: |
           pd="genshin_script-latest-${{ matrix.target }}"
-          echo "the pd path = $pd"
           mkdir -p "$pd"
           mv "$BIN" "$pd"
           7z a "$pd.zip" "$pd"
           certutil -hashfile "$pd.zip" SHA256 > "$pd.zip.sha256"
           echo "ASSET=$pd.zip" >> $GITHUB_ENV
           echo "ASSET_SUM=$pd.zip.sha256" >> $GITHUB_ENV
-
-      - name: Check Files Before Upload
-        run: |
-          echo "Checking if binary exists: ${{ env.ASSET }}"
-          ls -l "${{ env.ASSET }}"
-          echo "Checking if checksum exists: ${{ env.ASSET_SUM }}"
-          ls -l "${{ env.ASSET_SUM }}"
 
       - name: Upload Binary as Artifact
         uses: actions/upload-artifact@v4
@@ -74,6 +66,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: build
+
+      - name: Check Files Before Release
+        run: |
+          ls -l build
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
