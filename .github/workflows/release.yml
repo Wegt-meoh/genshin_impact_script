@@ -37,7 +37,7 @@ jobs:
         shell: bash
         run: |
           cargo build --release --target ${{ matrix.target }}
-          pd = "$ARCHIVE-latest-${{ matrix.target }}"
+          echo "pd=$ARCHIVE-latest-${{ matrix.target }}" >> $GITHUB_ENV
           mkdir -p "$pd"
           mv "target/${{ matrix.target }}/release/$ARCHIVE.exe" "$pd"
           7z a "$pd.zip" "$pd"
