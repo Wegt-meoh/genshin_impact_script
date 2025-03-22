@@ -27,7 +27,6 @@ jobs:
           echo "ARCHIVE=genshin_script" >> $GITHUB_ENV
 
       - name: Set up Rust
-        shell: bash
         uses: actions-rust-lang/setup-rust-toolchain@v1
      
       - name: Install Rust target
