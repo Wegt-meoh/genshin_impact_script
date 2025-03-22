@@ -51,6 +51,13 @@ jobs:
           echo "ASSET=$pd.zip" >> $GITHUB_ENV
           echo "ASSET_SUM=$pd.zip.sha256" >> $GITHUB_ENV
 
+      - name: Check Files Before Upload
+        run: |
+          echo "Checking if binary exists: ${{ env.ASSET }}"
+          ls -l "${{ env.ASSET }}"
+          echo "Checking if checksum exists: ${{ env.ASSET_SUM }}"
+          ls -l "${{ env.ASSET_SUM }}"
+
       - name: Upload Binary as Artifact
         uses: actions/upload-artifact@v4
         with:
