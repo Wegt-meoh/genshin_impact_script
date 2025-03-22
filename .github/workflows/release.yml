@@ -67,14 +67,10 @@ jobs:
         with:
           path: build
 
-      - name: Check Files Before Release
-        run: |
-          ls -l build
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: build/*
+          files: build*
           tag_name: latest
         env:
           GITHUB_TOKEN: ${{ secrets.GENSHIN_IMPACT_RELEASE }}
