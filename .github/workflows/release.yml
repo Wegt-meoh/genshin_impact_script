@@ -46,8 +46,8 @@ jobs:
         with:
           name: build-${{ matrix.target }}
           path: |
-            ${{ ASSET }}
-            ${{ ASSET_SUM }}
+            ${{ env.ASSET }}
+            ${{ env.ASSET_SUM }}
 
   release:
     needs: build
