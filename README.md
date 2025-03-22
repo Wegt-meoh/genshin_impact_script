@@ -1,6 +1,6 @@
 # A script for genshin impact
 
-mouse clicker or rotate
+mouse clicker and rotate
 
 ## Result
 
